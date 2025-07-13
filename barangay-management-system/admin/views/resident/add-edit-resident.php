@@ -32,11 +32,6 @@ $nationality = $resident->nationality ?? 'Filipino';
 $page_title = $is_editing ? __( 'Edit Resident', 'barangay-management-system' ) : __( 'Add New Resident', 'barangay-management-system' );
 $submit_button_text = $is_editing ? __( 'Update Resident', 'barangay-management-system' ) : __( 'Add Resident', 'barangay-management-system' );
 
-// For family head dropdown - ideally, this would be an AJAX searchable dropdown for large numbers
-$all_residents_for_select = [];
-if (function_exists('bms_get_residents')) {
-    $all_residents_for_select = bms_get_residents(['number' => 9999, 'orderby' => 'last_name', 'order' => 'ASC']);
-}
 
 ?>
 <div class="wrap">
@@ -148,14 +143,11 @@ if (function_exists('bms_get_residents')) {
                 <tr>
                     <th scope="row"><label for="family_head_id"><?php esc_html_e( 'Family Head', 'barangay-management-system' ); ?></label></th>
                     <td>
-                        <select name="family_head_id" id="family_head_id">
-                            <option value="0"><?php esc_html_e( '-- This resident is a Family Head or N/A --', 'barangay-management-system' ); ?></option>
-                            <?php foreach ( $all_residents_for_select as $res_option ) : ?>
-                                <?php if ( $is_editing && $resident_id == $res_option->id ) continue; // Cannot be their own family head ?>
-                                <option value="<?php echo esc_attr( $res_option->id ); ?>" <?php selected( $family_head_id_val, $res_option->id ); ?>>
-                                    <?php echo esc_html( trim(sprintf( '%s, %s %s', $res_option->last_name, $res_option->first_name, $res_option->middle_name ) ) ); ?>
-                                </option>
-                            <?php endforeach; ?>
+                        <select name="family_head_id" id="family_head_id" style="width: 100%;">
+                            <?php if ( $family_head_id_val ) : ?>
+                                <?php $family_head = bms_get_resident( $family_head_id_val ); ?>
+                                <option value="<?php echo esc_attr( $family_head->id ); ?>" selected="selected"><?php echo esc_html( $family_head->first_name . ' ' . $family_head->last_name ); ?></option>
+                            <?php endif; ?>
                         </select>
                         <p class="description"><?php esc_html_e('If this resident is part of a family, select the head of their family. If they are the head, leave as N/A.', 'barangay-management-system'); ?></p>
                     </td>
@@ -167,3 +159,27 @@ if (function_exists('bms_get_residents')) {
         <?php submit_button( $submit_button_text, 'primary', 'bms_submit_resident' ); ?>
     </form>
 </div>
+<script>
+jQuery(document).ready(function($) {
+    $('#family_head_id').select2({
+        ajax: {
+            url: '<?php echo esc_url( get_rest_url( null, 'bms/v1/residents' ) ); ?>',
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    search: params.term,
+                };
+            },
+            processResults: function (data) {
+                return {
+                    results: data
+                };
+            },
+            cache: true
+        },
+        placeholder: '<?php esc_attr_e( 'Search for a resident...', 'barangay-management-system' ); ?>',
+        minimumInputLength: 1,
+    });
+});
+</script>

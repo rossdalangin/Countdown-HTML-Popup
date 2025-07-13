@@ -269,6 +269,7 @@ require_once BMS_PLUGIN_DIR . 'includes/crud/event-crud.php';
 require_once BMS_PLUGIN_DIR . 'includes/crud/financial-crud.php';
 require_once BMS_PLUGIN_DIR . 'includes/crud/blotter-crud.php';
 require_once BMS_PLUGIN_DIR . 'includes/crud/certificate-request-crud.php';
+require_once BMS_PLUGIN_DIR . 'includes/rest-api.php';
 
 // Include admin-specific files
 if ( is_admin() ) {
@@ -335,10 +336,10 @@ function bms_enqueue_scripts() {
 // add_action( 'wp_enqueue_scripts', 'bms_enqueue_scripts' ); // For front-end
 
 function bms_admin_enqueue_scripts() {
-    // Example: wp_enqueue_style( 'bms-admin-style', BMS_PLUGIN_URL . 'css/bms-admin.css', array(), '1.0.0', 'all' );
-    // Example: wp_enqueue_script( 'bms-admin-script', BMS_PLUGIN_URL . 'js/bms-admin.js', array( 'jquery' ), '1.0.0', false );
+    wp_enqueue_style( 'select2', 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css', array(), '4.1.0-rc.0' );
+    wp_enqueue_script( 'select2', 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js', array( 'jquery' ), '4.1.0-rc.0', true );
 }
-// add_action( 'admin_enqueue_scripts', 'bms_admin_enqueue_scripts' ); // For admin area
+add_action( 'admin_enqueue_scripts', 'bms_admin_enqueue_scripts' ); // For admin area
 
 // We will create these directories and files in later steps
 // includes/
