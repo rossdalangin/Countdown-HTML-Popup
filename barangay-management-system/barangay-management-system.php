@@ -283,7 +283,7 @@ if ( is_admin() ) {
 }
 
 // Include public-facing files (if any yet)
-// Example: require_once BMS_PLUGIN_DIR . 'public/resident-public-views.php';
+require_once BMS_PLUGIN_DIR . 'public/shortcodes.php';
 
 
 /**
