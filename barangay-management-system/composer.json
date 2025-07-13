@@ -1,0 +1,8 @@
+{
+    "name": "jules/barangay-management-system",
+    "description": "A comprehensive management system for barangay operations.",
+    "type": "wordpress-plugin",
+    "require": {
+        "dompdf/dompdf": "^2.0"
+    }
+}

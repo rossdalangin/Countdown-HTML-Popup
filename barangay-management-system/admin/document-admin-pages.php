@@ -164,8 +164,11 @@ function bms_issue_document_page_handler() {
         $issued_doc_id = bms_issue_document( $issue_data );
 
         if ( $issued_doc_id ) {
-            bms_add_admin_notice( __( 'Document issued successfully.', 'barangay-management-system' ) );
-            wp_redirect( admin_url( 'admin.php?page=bms-view-issued-document&issued_doc_id=' . $issued_doc_id . '&issued=true' ) );
+            $issued_document = bms_get_issued_document( $issued_doc_id );
+            $pdf_content = bms_generate_pdf( $issued_document->generated_content );
+            header( 'Content-Type: application/pdf' );
+            header( 'Content-Disposition: attachment; filename="certificate.pdf"' );
+            echo $pdf_content;
             exit;
         } else {
             bms_add_admin_notice( __( 'Failed to issue document.', 'barangay-management-system' ), 'error' );

@@ -270,6 +270,7 @@ require_once BMS_PLUGIN_DIR . 'includes/crud/financial-crud.php';
 require_once BMS_PLUGIN_DIR . 'includes/crud/blotter-crud.php';
 require_once BMS_PLUGIN_DIR . 'includes/crud/certificate-request-crud.php';
 require_once BMS_PLUGIN_DIR . 'includes/rest-api.php';
+require_once BMS_PLUGIN_DIR . 'includes/pdf-generator.php';
 
 // Include admin-specific files
 if ( is_admin() ) {
