@@ -37,6 +37,7 @@ $submit_button_text = $is_editing ? __( 'Update Template', 'barangay-management-
                 <tr>
                     <th scope="row"><label for="template_content"><?php esc_html_e( 'Template Content', 'barangay-management-system' ); ?></label></th>
                     <td>
+                        <button type="button" id="load-professional-template" class="button"><?php esc_html_e( 'Load Professional Template', 'barangay-management-system' ); ?></button>
                         <?php
                         wp_editor( $template_content, 'template_content', array(
                             'textarea_name' => 'template_content',
@@ -72,3 +73,22 @@ $submit_button_text = $is_editing ? __( 'Update Template', 'barangay-management-
         <?php submit_button( $submit_button_text, 'primary', 'bms_submit_template' ); ?>
     </form>
 </div>
+<script>
+jQuery(document).ready(function($) {
+    $('#load-professional-template').on('click', function() {
+        $.ajax({
+            url: '<?php echo esc_url( get_rest_url( null, 'bms/v1/professional-template' ) ); ?>',
+            beforeSend: function ( xhr ) {
+                xhr.setRequestHeader( 'X-WP-Nonce', '<?php echo wp_create_nonce( 'wp_rest' ); ?>' );
+            },
+            success: function( response ) {
+                if ( tinyMCE.activeEditor ) {
+                    tinyMCE.activeEditor.setContent( response );
+                } else {
+                    $('#template_content').val( response );
+                }
+            }
+        });
+    });
+});
+</script>
