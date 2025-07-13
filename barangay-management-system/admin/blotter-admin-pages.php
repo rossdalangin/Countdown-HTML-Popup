@@ -63,6 +63,7 @@ function bms_blotter_records_list_page_handler() {
  * Handler for displaying the Add/Edit Blotter Record page.
  */
 function bms_blotter_add_edit_record_page_handler() {
+    ob_start();
     if ( ! current_user_can( BMS_MANAGE_BLOTTER_CAP ) ) {
         wp_die( esc_html__( 'You do not have sufficient permissions to manage blotter records.', 'barangay-management-system' ) );
     }
@@ -154,6 +155,7 @@ function bms_blotter_add_edit_record_page_handler() {
         $page_title = $is_editing ? __( 'Edit Blotter Record', 'barangay-management-system' ) : __( 'Add New Blotter Record', 'barangay-management-system' );
         echo '<div class="wrap"><h1>' . esc_html( $page_title ) . '</h1><p>' . esc_html__( 'Error: Form view file not found.', 'barangay-management-system' ) . '</p></div>';
     }
+    ob_end_flush();
 }
 
 ?>

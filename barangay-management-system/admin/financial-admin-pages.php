@@ -64,6 +64,7 @@ function bms_financials_overview_page_handler() {
  * Handler for displaying the Add/Edit Transaction page.
  */
 function bms_financial_add_edit_transaction_page_handler() {
+    ob_start();
     if ( ! current_user_can( BMS_MANAGE_FINANCIALS_CAP ) ) {
         wp_die( esc_html__( 'You do not have sufficient permissions to manage financial transactions.', 'barangay-management-system' ) );
     }
@@ -139,6 +140,7 @@ function bms_financial_add_edit_transaction_page_handler() {
         $page_title = $is_editing ? __( 'Edit Transaction', 'barangay-management-system' ) : __( 'Add New Transaction', 'barangay-management-system' );
         echo '<div class="wrap"><h1>' . esc_html( $page_title ) . '</h1><p>' . esc_html__( 'Error: Form view file not found.', 'barangay-management-system' ) . '</p></div>';
     }
+    ob_end_flush();
 }
 
 ?>

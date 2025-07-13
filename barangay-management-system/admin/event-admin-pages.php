@@ -59,6 +59,7 @@ function bms_events_list_page_handler() {
  * Handler for displaying the Add/Edit Event page.
  */
 function bms_event_add_edit_page_handler() {
+    ob_start();
     if ( ! current_user_can( BMS_MANAGE_EVENTS_CAP ) ) {
         wp_die( esc_html__( 'You do not have sufficient permissions to manage events.', 'barangay-management-system' ) );
     }
@@ -126,6 +127,7 @@ function bms_event_add_edit_page_handler() {
         $page_title = $is_editing ? __( 'Edit Event', 'barangay-management-system' ) : __( 'Add New Event', 'barangay-management-system' );
         echo '<div class="wrap"><h1>' . esc_html( $page_title ) . '</h1><p>' . esc_html__( 'Error: Form view file not found.', 'barangay-management-system' ) . '</p></div>';
     }
+    ob_end_flush();
 }
 
 /**

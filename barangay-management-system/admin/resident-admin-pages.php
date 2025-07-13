@@ -56,6 +56,7 @@ function bms_residents_list_page_handler() {
  * Handler for displaying the Add/Edit Resident page.
  */
 function bms_resident_add_edit_page_handler() {
+    ob_start();
     if ( ! current_user_can( BMS_MANAGE_RESIDENTS_CAP ) ) {
         wp_die( esc_html__( 'You do not have sufficient permissions to manage residents.', 'barangay-management-system' ) );
     }
@@ -144,6 +145,7 @@ function bms_resident_add_edit_page_handler() {
         $page_title = $is_editing ? __( 'Edit Resident', 'barangay-management-system' ) : __( 'Add New Resident', 'barangay-management-system' );
         echo '<div class="wrap"><h1>' . esc_html( $page_title ) . '</h1><p>' . esc_html__( 'Error: Form view file not found.', 'barangay-management-system' ) . '</p></div>';
     }
+    ob_end_flush();
 }
 
 ?>
