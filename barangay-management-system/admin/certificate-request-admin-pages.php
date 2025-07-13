@@ -102,9 +102,7 @@ function bms_cert_requests_list_page_handler() {
             }
         }
         if ($message) {
-            add_action('admin_notices', function() use ($message, $message_type) {
-                 echo '<div class="notice notice-' . esc_attr($message_type) . ' is-dismissible"><p>' . esc_html($message) . '</p></div>';
-            });
+            bms_add_admin_notice( $message, $message_type );
         }
          // To reflect changes immediately if not redirecting elsewhere
         // wp_redirect($redirect_url); exit; // This causes "headers already sent" with add_action('admin_notices')

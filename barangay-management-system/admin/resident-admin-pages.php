@@ -34,13 +34,9 @@ function bms_residents_list_page_handler() {
         }
         $resident_id = absint( $_GET['resident_id'] );
         if (bms_delete_resident( $resident_id )) {
-            add_action( 'admin_notices', function() {
-                echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Resident deleted successfully.', 'barangay-management-system' ) . '</p></div>';
-            });
+            bms_add_admin_notice( __( 'Resident deleted successfully.', 'barangay-management-system' ) );
         } else {
-            add_action( 'admin_notices', function() {
-                echo '<div class="notice notice-error is-dismissible"><p>' . esc_html__( 'Failed to delete resident.', 'barangay-management-system' ) . '</p></div>';
-            });
+            bms_add_admin_notice( __( 'Failed to delete resident.', 'barangay-management-system' ), 'error' );
         }
     }
 
@@ -111,32 +107,28 @@ function bms_resident_add_edit_page_handler() {
         // Validate birth_date format (YYYY-MM-DD)
         if (!empty($data['birth_date']) && !preg_match("/^\d{4}-\d{2}-\d{2}$/", $data['birth_date'])) {
             // Handle invalid date format - perhaps add an admin notice and don't save
-            add_action('admin_notices', function() {
-                echo '<div class="notice notice-error is-dismissible"><p>' . esc_html__('Invalid birth date format. Please use YYYY-MM-DD.', 'barangay-management-system') . '</p></div>';
-            });
+            bms_add_admin_notice( __('Invalid birth date format. Please use YYYY-MM-DD.', 'barangay-management-system'), 'error' );
         } else {
             $result = false;
             if ( $is_editing && $resident_id > 0 ) {
                 $result = bms_update_resident( $resident_id, $data );
                 $message = $result ? __( 'Resident updated successfully.', 'barangay-management-system' ) : __( 'Failed to update resident.', 'barangay-management-system' );
+                bms_add_admin_notice( $message, $result ? 'success' : 'error' );
             } else {
                 // For new resident, add date_registered and created_by
                 $data['date_registered'] = current_time( 'mysql', 1 ); // GMT
                 $data['created_by'] = get_current_user_id();
                 $new_resident_id = bms_create_resident( $data );
                 $result = $new_resident_id !== false;
-                $message = $result ? __( 'Resident added successfully.', 'barangay-management-system' ) : __( 'Failed to add resident.', 'barangay-management-system' );
                 if ($result) {
+                    bms_add_admin_notice( __( 'Resident added successfully.', 'barangay-management-system' ) );
                     // Redirect to edit page of the new resident
                     wp_redirect( admin_url('admin.php?page=bms-resident-add&resident_id=' . $new_resident_id . '&resident_added=true') );
                     exit;
+                } else {
+                    bms_add_admin_notice( __( 'Failed to add resident.', 'barangay-management-system' ), 'error' );
                 }
             }
-
-            add_action( 'admin_notices', function() use ( $message, $result ) {
-                $notice_type = $result ? 'success' : 'error';
-                echo '<div class="notice notice-' . $notice_type . ' is-dismissible"><p>' . esc_html( $message ) . '</p></div>';
-            });
 
             // If successful and editing, reload the resident data
             if ($result && $is_editing) {

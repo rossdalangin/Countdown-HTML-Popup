@@ -32,13 +32,9 @@ function bms_blotter_records_list_page_handler() {
         }
         $record_id = absint( $_GET['record_id'] );
         if ( bms_delete_blotter_record( $record_id ) ) {
-            add_action( 'admin_notices', function() {
-                echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Blotter record deleted successfully.', 'barangay-management-system' ) . '</p></div>';
-            });
+            bms_add_admin_notice( __( 'Blotter record deleted successfully.', 'barangay-management-system' ) );
         } else {
-             add_action( 'admin_notices', function() {
-                echo '<div class="notice notice-error is-dismissible"><p>' . esc_html__( 'Failed to delete blotter record.', 'barangay-management-system' ) . '</p></div>';
-            });
+            bms_add_admin_notice( __( 'Failed to delete blotter record.', 'barangay-management-system' ), 'error' );
         }
     }
 
@@ -117,15 +113,14 @@ function bms_blotter_add_edit_record_page_handler() {
         }
 
         if (empty($data['incident_date']) || !$incident_datetime_obj) {
-             add_action('admin_notices', function() {
-                echo '<div class="notice notice-error is-dismissible"><p>' . esc_html__('Invalid incident date/time format. Please use YYYY-MM-DDTHH:MM or YYYY-MM-DD HH:MM.', 'barangay-management-system') . '</p></div>';
-            });
+             bms_add_admin_notice( __('Invalid incident date/time format. Please use YYYY-MM-DDTHH:MM or YYYY-MM-DD HH:MM.', 'barangay-management-system'), 'error' );
         } else {
             $data['incident_date'] = $incident_datetime_obj->format('Y-m-d H:i:s'); // Convert to DB format
             $result = false;
             if ( $is_editing && $record_id > 0 ) {
                 $result = bms_update_blotter_record( $record_id, $data );
                 $message = $result ? __( 'Blotter record updated successfully.', 'barangay-management-system' ) : __( 'Failed to update blotter record.', 'barangay-management-system' );
+                bms_add_admin_notice( $message, $result ? 'success' : 'error' );
             } else {
                 $data['recorded_by'] = get_current_user_id();
                 $data['date_reported'] = current_time( 'mysql' );
@@ -134,16 +129,14 @@ function bms_blotter_add_edit_record_page_handler() {
                 }
                 $new_record_id = bms_create_blotter_record( $data );
                 $result = $new_record_id !== false;
-                $message = $result ? __( 'Blotter record added successfully.', 'barangay-management-system' ) : __( 'Failed to add blotter record. Please check all required fields.', 'barangay-management-system' );
                 if ($result) {
-                    wp_redirect( admin_url('admin.php?page=bms-blotter&record_added=true&id=' . $new_record_id) );
+                    bms_add_admin_notice( __( 'Blotter record added successfully.', 'barangay-management-system' ) );
+                    wp_redirect( admin_url('admin.php?page=bms-blotter-add&record_id=' . $new_record_id . '&record_added=true') );
                     exit;
+                } else {
+                    bms_add_admin_notice( __( 'Failed to add blotter record. Please check all required fields.', 'barangay-management-system' ), 'error' );
                 }
             }
-            add_action( 'admin_notices', function() use ( $message, $result ) {
-                $notice_type = $result ? 'success' : 'error';
-                echo '<div class="notice notice-' . $notice_type . ' is-dismissible"><p>' . esc_html( $message ) . '</p></div>';
-            });
             if ($result && $is_editing) {
                 $record = bms_get_blotter_record( $record_id );
             }

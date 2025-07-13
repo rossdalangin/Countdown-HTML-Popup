@@ -32,13 +32,9 @@ function bms_financials_overview_page_handler() {
         }
         $transaction_id = absint( $_GET['transaction_id'] );
         if ( bms_delete_transaction( $transaction_id ) ) {
-            add_action( 'admin_notices', function() {
-                echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Transaction deleted successfully.', 'barangay-management-system' ) . '</p></div>';
-            });
+            bms_add_admin_notice( __( 'Transaction deleted successfully.', 'barangay-management-system' ) );
         } else {
-             add_action( 'admin_notices', function() {
-                echo '<div class="notice notice-error is-dismissible"><p>' . esc_html__( 'Failed to delete transaction.', 'barangay-management-system' ) . '</p></div>';
-            });
+            bms_add_admin_notice( __( 'Failed to delete transaction.', 'barangay-management-system' ), 'error' );
         }
     }
 
@@ -106,34 +102,29 @@ function bms_financial_add_edit_transaction_page_handler() {
 
         // Amount validation
         if ( !is_numeric($data['amount']) || floatval($data['amount']) <= 0 ) {
-             add_action('admin_notices', function() {
-                echo '<div class="notice notice-error is-dismissible"><p>' . esc_html__('Invalid amount. Please enter a positive number.', 'barangay-management-system') . '</p></div>';
-            });
+             bms_add_admin_notice( __('Invalid amount. Please enter a positive number.', 'barangay-management-system'), 'error' );
         }
         // Date validation
         elseif (empty($data['transaction_date']) || !preg_match("/^\d{4}-\d{2}-\d{2}$/", $data['transaction_date'])) {
-             add_action('admin_notices', function() {
-                echo '<div class="notice notice-error is-dismissible"><p>' . esc_html__('Invalid transaction date format. Please use YYYY-MM-DD.', 'barangay-management-system') . '</p></div>';
-            });
+             bms_add_admin_notice( __('Invalid transaction date format. Please use YYYY-MM-DD.', 'barangay-management-system'), 'error' );
         } else {
             $result = false;
             if ( $is_editing && $transaction_id > 0 ) {
                 $result = bms_update_transaction( $transaction_id, $data );
                 $message = $result ? __( 'Transaction updated successfully.', 'barangay-management-system' ) : __( 'Failed to update transaction.', 'barangay-management-system' );
+                bms_add_admin_notice( $message, $result ? 'success' : 'error' );
             } else {
                 $data['created_by'] = get_current_user_id();
                 $new_transaction_id = bms_create_transaction( $data );
                 $result = $new_transaction_id !== false;
-                $message = $result ? __( 'Transaction added successfully.', 'barangay-management-system' ) : __( 'Failed to add transaction. Please check all required fields and amount.', 'barangay-management-system' );
                 if ($result) {
-                    wp_redirect( admin_url('admin.php?page=bms-financials&transaction_added=true&id=' . $new_transaction_id) );
+                    bms_add_admin_notice( __( 'Transaction added successfully.', 'barangay-management-system' ) );
+                    wp_redirect( admin_url('admin.php?page=bms-financial-add&transaction_id=' . $new_transaction_id . '&transaction_added=true') );
                     exit;
+                } else {
+                    bms_add_admin_notice( __( 'Failed to add transaction. Please check all required fields and amount.', 'barangay-management-system' ), 'error' );
                 }
             }
-            add_action( 'admin_notices', function() use ( $message, $result ) {
-                $notice_type = $result ? 'success' : 'error';
-                echo '<div class="notice notice-' . $notice_type . ' is-dismissible"><p>' . esc_html( $message ) . '</p></div>';
-            });
             if ($result && $is_editing) {
                 $transaction = bms_get_transaction( $transaction_id );
             }

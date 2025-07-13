@@ -32,13 +32,9 @@ function bms_events_list_page_handler() {
         }
         $event_id = absint( $_GET['event_id'] );
         if ( bms_delete_event( $event_id ) ) {
-            add_action( 'admin_notices', function() {
-                echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Event deleted successfully.', 'barangay-management-system' ) . '</p></div>';
-            });
+            bms_add_admin_notice( __( 'Event deleted successfully.', 'barangay-management-system' ) );
         } else {
-            add_action( 'admin_notices', function() {
-                echo '<div class="notice notice-error is-dismissible"><p>' . esc_html__( 'Failed to delete event.', 'barangay-management-system' ) . '</p></div>';
-            });
+            bms_add_admin_notice( __( 'Failed to delete event.', 'barangay-management-system' ), 'error' );
         }
     }
 
@@ -99,28 +95,25 @@ function bms_event_add_edit_page_handler() {
 
         // Basic date validation
         if (empty($data['event_date']) || !preg_match("/^\d{4}-\d{2}-\d{2}$/", $data['event_date'])) {
-             add_action('admin_notices', function() {
-                echo '<div class="notice notice-error is-dismissible"><p>' . esc_html__('Invalid event date format. Please use YYYY-MM-DD.', 'barangay-management-system') . '</p></div>';
-            });
+             bms_add_admin_notice( __('Invalid event date format. Please use YYYY-MM-DD.', 'barangay-management-system'), 'error' );
         } else {
             $result = false;
             if ( $is_editing && $event_id > 0 ) {
                 $result = bms_update_event( $event_id, $data );
                 $message = $result ? __( 'Event updated successfully.', 'barangay-management-system' ) : __( 'Failed to update event.', 'barangay-management-system' );
+                bms_add_admin_notice( $message, $result ? 'success' : 'error' );
             } else {
                 $data['created_by'] = get_current_user_id();
                 $new_event_id = bms_create_event( $data );
                 $result = $new_event_id !== false;
-                $message = $result ? __( 'Event added successfully.', 'barangay-management-system' ) : __( 'Failed to add event.', 'barangay-management-system' );
                 if ($result) {
-                    wp_redirect( admin_url('admin.php?page=bms-events&event_added=true&id=' . $new_event_id) );
+                    bms_add_admin_notice( __( 'Event added successfully.', 'barangay-management-system' ) );
+                    wp_redirect( admin_url('admin.php?page=bms-event-add&event_id=' . $new_event_id . '&event_added=true') );
                     exit;
+                } else {
+                    bms_add_admin_notice( __( 'Failed to add event.', 'barangay-management-system' ), 'error' );
                 }
             }
-            add_action( 'admin_notices', function() use ( $message, $result ) {
-                $notice_type = $result ? 'success' : 'error';
-                echo '<div class="notice notice-' . $notice_type . ' is-dismissible"><p>' . esc_html( $message ) . '</p></div>';
-            });
             if ($result && $is_editing) {
                 $event = bms_get_event( $event_id );
             }
@@ -165,13 +158,9 @@ function bms_event_attendance_page_handler() {
         $resident_id = absint( $_POST['resident_id'] );
         $notes = sanitize_text_field( $_POST['attendance_notes'] ?? '' );
         if ( bms_add_event_attendee( $event_id, $resident_id, ['notes' => $notes] ) ) {
-            add_action( 'admin_notices', function() {
-                echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Attendee added successfully.', 'barangay-management-system' ) . '</p></div>';
-            });
+            bms_add_admin_notice( __( 'Attendee added successfully.', 'barangay-management-system' ) );
         } else {
-            add_action( 'admin_notices', function() {
-                echo '<div class="notice notice-error is-dismissible"><p>' . esc_html__( 'Failed to add attendee. They might already be on the list.', 'barangay-management-system' ) . '</p></div>';
-            });
+            bms_add_admin_notice( __( 'Failed to add attendee. They might already be on the list.', 'barangay-management-system' ), 'error' );
         }
     }
 
@@ -182,13 +171,9 @@ function bms_event_attendance_page_handler() {
         }
         $resident_id_to_remove = absint( $_GET['resident_id'] );
         if ( bms_remove_event_attendee( $event_id, $resident_id_to_remove ) ) {
-             add_action( 'admin_notices', function() {
-                echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Attendee removed successfully.', 'barangay-management-system' ) . '</p></div>';
-            });
+            bms_add_admin_notice( __( 'Attendee removed successfully.', 'barangay-management-system' ) );
         } else {
-            add_action( 'admin_notices', function() {
-                echo '<div class="notice notice-error is-dismissible"><p>' . esc_html__( 'Failed to remove attendee.', 'barangay-management-system' ) . '</p></div>';
-            });
+            bms_add_admin_notice( __( 'Failed to remove attendee.', 'barangay-management-system' ), 'error' );
         }
     }
 

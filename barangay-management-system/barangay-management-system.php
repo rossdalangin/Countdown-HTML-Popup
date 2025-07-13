@@ -261,6 +261,7 @@ register_deactivation_hook( __FILE__, 'deactivate_barangay_management_system' );
 
 
 // Include plugin core files
+require_once BMS_PLUGIN_DIR . 'includes/admin-notices.php';
 require_once BMS_PLUGIN_DIR . 'includes/user-roles.php'; // User roles and capabilities
 require_once BMS_PLUGIN_DIR . 'includes/crud/resident-crud.php';
 require_once BMS_PLUGIN_DIR . 'includes/crud/document-crud.php';

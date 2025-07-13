@@ -32,13 +32,9 @@ function bms_doc_templates_list_page_handler() {
         }
         $template_id = absint( $_GET['template_id'] );
         if ( bms_delete_document_template( $template_id ) ) {
-            add_action( 'admin_notices', function() {
-                echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Template deleted successfully.', 'barangay-management-system' ) . '</p></div>';
-            });
+            bms_add_admin_notice( __( 'Template deleted successfully.', 'barangay-management-system' ) );
         } else {
-             add_action( 'admin_notices', function() {
-                echo '<div class="notice notice-error is-dismissible"><p>' . esc_html__( 'Failed to delete template.', 'barangay-management-system' ) . '</p></div>';
-            });
+            bms_add_admin_notice( __( 'Failed to delete template.', 'barangay-management-system' ), 'error' );
         }
     }
 
@@ -92,20 +88,19 @@ function bms_doc_template_add_edit_page_handler() {
         if ( $is_editing && $template_id > 0 ) {
             $result = bms_update_document_template( $template_id, $data );
             $message = $result ? __( 'Template updated successfully.', 'barangay-management-system' ) : __( 'Failed to update template.', 'barangay-management-system' );
+            bms_add_admin_notice( $message, $result ? 'success' : 'error' );
         } else {
             $data['created_by'] = get_current_user_id();
             $new_template_id = bms_create_document_template( $data );
             $result = $new_template_id !== false;
-            $message = $result ? __( 'Template added successfully.', 'barangay-management-system' ) : __( 'Failed to add template.', 'barangay-management-system' );
             if ($result) {
-                wp_redirect( admin_url('admin.php?page=bms-doc-templates&template_added=true&id=' . $new_template_id) );
+                bms_add_admin_notice( __( 'Template added successfully.', 'barangay-management-system' ) );
+                wp_redirect( admin_url('admin.php?page=bms-doc-template-add&template_id=' . $new_template_id . '&template_added=true') );
                 exit;
+            } else {
+                bms_add_admin_notice( __( 'Failed to add template.', 'barangay-management-system' ), 'error' );
             }
         }
-        add_action( 'admin_notices', function() use ( $message, $result ) {
-            $notice_type = $result ? 'success' : 'error';
-            echo '<div class="notice notice-' . $notice_type . ' is-dismissible"><p>' . esc_html( $message ) . '</p></div>';
-        });
         if ($result && $is_editing) {
             $template = bms_get_document_template( $template_id ); // Reload data
         }
@@ -167,12 +162,11 @@ function bms_issue_document_page_handler() {
         $issued_doc_id = bms_issue_document( $issue_data );
 
         if ( $issued_doc_id ) {
+            bms_add_admin_notice( __( 'Document issued successfully.', 'barangay-management-system' ) );
             wp_redirect( admin_url( 'admin.php?page=bms-view-issued-document&issued_doc_id=' . $issued_doc_id . '&issued=true' ) );
             exit;
         } else {
-            add_action( 'admin_notices', function() {
-                echo '<div class="notice notice-error is-dismissible"><p>' . esc_html__( 'Failed to issue document.', 'barangay-management-system' ) . '</p></div>';
-            });
+            bms_add_admin_notice( __( 'Failed to issue document.', 'barangay-management-system' ), 'error' );
         }
     }
 
@@ -208,9 +202,7 @@ function bms_view_issued_document_page_handler() {
     }
 
     if (isset($_GET['issued']) && $_GET['issued'] == 'true') {
-         add_action( 'admin_notices', function() {
-            echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Document issued successfully.', 'barangay-management-system' ) . '</p></div>';
-        });
+        bms_add_admin_notice( __( 'Document issued successfully.', 'barangay-management-system' ) );
     }
 
     if ( file_exists( BMS_PLUGIN_DIR . 'admin/views/issued-document/view-issued-document.php' ) ) {
