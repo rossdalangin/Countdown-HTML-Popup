@@ -102,18 +102,6 @@ function bms_doc_templates_list_page_handler() {
 /**
  * Handler for displaying the Add/Edit Document Template page.
  */
-function bms_set_default_template_content() {
-    global $pagenow;
-    if ( 'admin.php' === $pagenow && 'bms-doc-template-add' === $_GET['page'] ) {
-        if ( ! isset( $_GET['template_id'] ) ) {
-            ob_start();
-            include BMS_PLUGIN_DIR . 'admin/views/document-template/professional-certificate.php';
-            $GLOBALS['bms_default_template_content'] = ob_get_clean();
-        }
-    }
-}
-add_action( 'admin_init', 'bms_set_default_template_content' );
-
 function bms_doc_template_add_edit_page_handler() {
     if ( ! current_user_can( BMS_MANAGE_DOCUMENT_TEMPLATES_CAP ) ) {
         wp_die( esc_html__( 'You do not have sufficient permissions to manage document templates.', 'barangay-management-system' ) );
@@ -168,10 +156,6 @@ function bms_doc_template_add_edit_page_handler() {
         if ($result && $is_editing) {
             $template = bms_get_document_template( $template_id ); // Reload data
         }
-    }
-
-    if ( ! $is_editing && isset( $GLOBALS['bms_default_template_content'] ) ) {
-        $template_content = $GLOBALS['bms_default_template_content'];
     }
 
     if ( file_exists( BMS_PLUGIN_DIR . 'admin/views/document-template/add-edit-document-template.php' ) ) {
