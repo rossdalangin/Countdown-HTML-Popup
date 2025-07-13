@@ -59,3 +59,84 @@ function bms_register_document_template_post_type() {
     register_post_type( 'bms_doc_template', $args );
 }
 add_action( 'init', 'bms_register_document_template_post_type' );
+
+/**
+ * Allow all HTML tags and attributes for the bms_doc_template post type.
+ *
+ * @param array $allowedposttags The allowed post tags.
+ * @param string $context The context.
+ * @return array The allowed post tags.
+ */
+function bms_allow_all_html_tags( $allowedposttags, $context ) {
+    if ( 'bms_doc_template' === $context ) {
+        $allowedposttags = array(
+            'a'      => array(
+                'href'   => true,
+                'title'  => true,
+                'target' => true,
+            ),
+            'br'     => array(),
+            'em'     => array(),
+            'strong' => array(),
+            'p'      => array(
+                'class' => true,
+                'id'    => true,
+                'style' => true,
+            ),
+            'h1'     => array(
+                'class' => true,
+                'id'    => true,
+                'style' => true,
+            ),
+            'h2'     => array(
+                'class' => true,
+                'id'    => true,
+                'style' => true,
+            ),
+            'h3'     => array(
+                'class' => true,
+                'id'    => true,
+                'style' => true,
+            ),
+            'h4'     => array(
+                'class' => true,
+                'id'    => true,
+                'style' => true,
+            ),
+            'h5'     => array(
+                'class' => true,
+                'id'    => true,
+                'style' => true,
+            ),
+            'h6'     => array(
+                'class' => true,
+                'id'    => true,
+                'style' => true,
+            ),
+            'div'    => array(
+                'class' => true,
+                'id'    => true,
+                'style' => true,
+            ),
+            'span'   => array(
+                'class' => true,
+                'id'    => true,
+                'style' => true,
+            ),
+            'img'    => array(
+                'src'    => true,
+                'alt'    => true,
+                'class'  => true,
+                'id'     => true,
+                'style'  => true,
+                'width'  => true,
+                'height' => true,
+            ),
+            'style'  => array(
+                'type' => true,
+            ),
+        );
+    }
+    return $allowedposttags;
+}
+add_filter( 'wp_kses_allowed_html', 'bms_allow_all_html_tags', 10, 2 );
