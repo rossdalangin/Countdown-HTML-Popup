@@ -44,24 +44,6 @@ function bms_register_admin_menus() {
         'bms_resident_add_edit_page_handler'
     );
 
-    // Document Template Submenus
-    add_submenu_page(
-        'barangay-ms',
-        __( 'Document Templates', 'barangay-management-system' ),
-        __( 'Document Templates', 'barangay-management-system' ),
-        BMS_VIEW_DOCUMENT_TEMPLATES_CAP,
-        'bms-doc-templates',
-        'bms_doc_templates_list_page_handler'
-    );
-
-    add_submenu_page(
-        'bms-doc-templates',
-        __( 'Add New Template', 'barangay-management-system' ),
-        __( 'Add New Template', 'barangay-management-system' ),
-        BMS_MANAGE_DOCUMENT_TEMPLATES_CAP,
-        'bms-doc-template-add',
-        'bms_doc_template_add_edit_page_handler'
-    );
 
     add_submenu_page(
         null,

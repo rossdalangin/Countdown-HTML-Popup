@@ -258,6 +258,11 @@ function deactivate_barangay_management_system() {
 
 register_activation_hook( __FILE__, 'activate_barangay_management_system' );
 register_deactivation_hook( __FILE__, 'deactivate_barangay_management_system' );
+register_uninstall_hook( __FILE__, 'bms_uninstall' );
+
+function bms_uninstall() {
+    require_once BMS_PLUGIN_DIR . 'includes/uninstall.php';
+}
 
 
 // Include plugin core files
@@ -271,6 +276,8 @@ require_once BMS_PLUGIN_DIR . 'includes/crud/blotter-crud.php';
 require_once BMS_PLUGIN_DIR . 'includes/crud/certificate-request-crud.php';
 require_once BMS_PLUGIN_DIR . 'includes/rest-api.php';
 require_once BMS_PLUGIN_DIR . 'includes/pdf-generator.php';
+require_once BMS_PLUGIN_DIR . 'includes/post-types.php';
+require_once BMS_PLUGIN_DIR . 'includes/migration.php';
 
 // Include admin-specific files
 if ( is_admin() ) {
