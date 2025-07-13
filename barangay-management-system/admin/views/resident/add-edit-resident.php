@@ -166,6 +166,9 @@ jQuery(document).ready(function($) {
             url: '<?php echo esc_url( get_rest_url( null, 'bms/v1/residents' ) ); ?>',
             dataType: 'json',
             delay: 250,
+            beforeSend: function ( xhr ) {
+                xhr.setRequestHeader( 'X-WP-Nonce', '<?php echo wp_create_nonce( 'wp_rest' ); ?>' );
+            },
             data: function (params) {
                 return {
                     search: params.term,
