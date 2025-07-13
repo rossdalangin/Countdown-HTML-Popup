@@ -11,25 +11,6 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 /**
- * Register Certificate Request Admin Menu.
- */
-function bms_certificate_request_admin_menu() {
-    add_submenu_page(
-        'barangay-ms',    // Parent slug
-        __( 'Certificate Requests', 'barangay-management-system' ),
-        __( 'Certificate Requests', 'barangay-management-system' ),
-        BMS_MANAGE_CERTIFICATE_REQUESTS_CAP, // Staff/Admin manage all requests
-        'bms-cert-requests',
-        'bms_cert_requests_list_page_handler'
-    );
-
-    // Hidden page for viewing request details (can be linked from the list)
-    // Or this could be part of the edit/update status flow.
-    // For now, actions like "Approve", "Generate" will be on the list page or a dedicated action handler.
-}
-add_action( 'admin_menu', 'bms_certificate_request_admin_menu' );
-
-/**
  * Handler for displaying the Certificate Requests List page.
  */
 function bms_cert_requests_list_page_handler() {

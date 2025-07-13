@@ -11,30 +11,6 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 /**
- * Register Blotter Admin Menu.
- */
-function bms_blotter_admin_menu() {
-    add_submenu_page(
-        'barangay-ms',    // Parent slug
-        __( 'Blotter Records', 'barangay-management-system' ),
-        __( 'Blotter Records', 'barangay-management-system' ),
-        BMS_VIEW_BLOTTER_CAP,
-        'bms-blotter',
-        'bms_blotter_records_list_page_handler'
-    );
-
-    add_submenu_page(
-        'bms-blotter', // Parent slug
-        __( 'Add New Blotter Record', 'barangay-management-system' ),
-        __( 'Add New Record', 'barangay-management-system' ), // Shorter menu title
-        BMS_MANAGE_BLOTTER_CAP,
-        'bms-blotter-add',
-        'bms_blotter_add_edit_record_page_handler'
-    );
-}
-add_action( 'admin_menu', 'bms_blotter_admin_menu' );
-
-/**
  * Handler for displaying the Blotter Records List page.
  */
 function bms_blotter_records_list_page_handler() {

@@ -11,40 +11,6 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 /**
- * Register Event Admin Menu.
- */
-function bms_event_admin_menu() {
-    add_submenu_page(
-        'barangay-ms',    // Parent slug
-        __( 'Events', 'barangay-management-system' ), // Page title
-        __( 'Events', 'barangay-management-system' ), // Menu title
-        BMS_VIEW_EVENTS_CAP,
-        'bms-events',
-        'bms_events_list_page_handler'
-    );
-
-    add_submenu_page(
-        'bms-events',
-        __( 'Add New Event', 'barangay-management-system' ),
-        __( 'Add New Event', 'barangay-management-system' ),
-        BMS_MANAGE_EVENTS_CAP,
-        'bms-event-add',
-        'bms_event_add_edit_page_handler'
-    );
-
-    // Hidden page for managing attendance for a specific event
-    add_submenu_page(
-        null, // Hidden
-        __( 'Manage Event Attendance', 'barangay-management-system' ),
-        __( 'Manage Event Attendance', 'barangay-management-system' ),
-        BMS_MANAGE_EVENTS_CAP,
-        'bms-event-attendance',
-        'bms_event_attendance_page_handler'
-    );
-}
-add_action( 'admin_menu', 'bms_event_admin_menu' );
-
-/**
  * Handler for displaying the Events List page.
  */
 function bms_events_list_page_handler() {

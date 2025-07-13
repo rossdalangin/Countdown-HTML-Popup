@@ -11,53 +11,6 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 /**
- * Register Document Template Admin Menu.
- */
-function bms_document_template_admin_menu() {
-    // Submenu under "Barangay MS"
-    add_submenu_page(
-        'barangay-ms',    // Parent slug
-        __( 'Document Templates', 'barangay-management-system' ), // Page title
-        __( 'Document Templates', 'barangay-management-system' ), // Menu title
-        BMS_VIEW_DOCUMENT_TEMPLATES_CAP, // Capability to view templates
-        'bms-doc-templates',  // Menu slug
-        'bms_doc_templates_list_page_handler' // Function to display page content
-    );
-
-    add_submenu_page(
-        'bms-doc-templates',  // Parent slug (under Document Templates for better grouping)
-        __( 'Add New Template', 'barangay-management-system' ),
-        __( 'Add New Template', 'barangay-management-system' ),
-        BMS_MANAGE_DOCUMENT_TEMPLATES_CAP, // Capability to manage templates
-        'bms-doc-template-add', // Menu slug
-        'bms_doc_template_add_edit_page_handler' // Function
-    );
-
-    // Hidden submenu for issuing a document from a template (will be linked from templates list or resident profile)
-    add_submenu_page(
-        null, // No parent menu item, effectively hidden
-        __( 'Issue Document', 'barangay-management-system' ),
-        __( 'Issue Document', 'barangay-management-system' ),
-        BMS_ISSUE_DOCUMENTS_CAP,
-        'bms-issue-document',
-        'bms_issue_document_page_handler'
-    );
-
-    // Hidden submenu for viewing an issued document
-     add_submenu_page(
-        null, // No parent menu item, effectively hidden
-        __( 'View Issued Document', 'barangay-management-system' ),
-        __( 'View Issued Document', 'barangay-management-system' ),
-        BMS_VIEW_ISSUED_DOCUMENTS_CAP, // Capability to view issued documents
-        'bms-view-issued-document',
-        'bms_view_issued_document_page_handler'
-    );
-
-    // We might add a page for "All Issued Documents" later
-}
-add_action( 'admin_menu', 'bms_document_template_admin_menu' );
-
-/**
  * Handler for displaying the Document Templates List page.
  */
 function bms_doc_templates_list_page_handler() {

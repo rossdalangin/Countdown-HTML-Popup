@@ -271,6 +271,7 @@ require_once BMS_PLUGIN_DIR . 'includes/crud/certificate-request-crud.php';
 
 // Include admin-specific files
 if ( is_admin() ) {
+    require_once BMS_PLUGIN_DIR . 'admin/admin-hooks.php';
     require_once BMS_PLUGIN_DIR . 'admin/resident-admin-pages.php';
     require_once BMS_PLUGIN_DIR . 'admin/document-admin-pages.php';
     require_once BMS_PLUGIN_DIR . 'admin/event-admin-pages.php';

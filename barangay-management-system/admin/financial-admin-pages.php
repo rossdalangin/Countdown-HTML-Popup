@@ -11,30 +11,6 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 /**
- * Register Financial Admin Menu.
- */
-function bms_financial_admin_menu() {
-    add_submenu_page(
-        'barangay-ms',    // Parent slug
-        __( 'Financials', 'barangay-management-system' ),
-        __( 'Financials', 'barangay-management-system' ),
-        BMS_VIEW_FINANCIALS_CAP,
-        'bms-financials',
-        'bms_financials_overview_page_handler'
-    );
-
-    add_submenu_page(
-        'bms-financials', // Parent slug
-        __( 'Add Transaction', 'barangay-management-system' ),
-        __( 'Add Transaction', 'barangay-management-system' ),
-        BMS_MANAGE_FINANCIALS_CAP,
-        'bms-financial-add',
-        'bms_financial_add_edit_transaction_page_handler'
-    );
-}
-add_action( 'admin_menu', 'bms_financial_admin_menu' );
-
-/**
  * Handler for displaying the Financials Overview/List page.
  */
 function bms_financials_overview_page_handler() {

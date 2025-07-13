@@ -11,46 +11,6 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 /**
- * Register Resident Admin Menu.
- *
- * Adds a top-level menu page for "Barangay MS" and
- * a submenu page for "Residents".
- */
-function bms_resident_admin_menu() {
-    add_menu_page(
-        __( 'Barangay MS', 'barangay-management-system' ), // Page title
-        __( 'Barangay MS', 'barangay-management-system' ), // Menu title
-        BMS_VIEW_RESIDENTS_CAP, // Capability - view for parent, manage for specific sub-items
-        'barangay-ms',    // Menu slug
-        'bms_residents_list_page_handler', // Function to display the first submenu page content
-        'dashicons-admin-users', // Icon
-        26 // Position
-    );
-
-    add_submenu_page(
-        'barangay-ms',    // Parent slug
-        __( 'All Residents', 'barangay-management-system' ), // Page title
-        __( 'All Residents', 'barangay-management-system' ), // Menu title
-        BMS_VIEW_RESIDENTS_CAP, // Capability to view the list
-        'bms-residents',  // Menu slug (this will be the main residents page)
-        'bms_residents_list_page_handler' // Function to display page content
-    );
-
-    add_submenu_page(
-        'bms-residents',  // Parent slug (under All Residents for better grouping, or 'barangay-ms')
-        __( 'Add New Resident', 'barangay-management-system' ),
-        __( 'Add New Resident', 'barangay-management-system' ),
-        BMS_MANAGE_RESIDENTS_CAP, // Capability to add/edit/delete
-        'bms-resident-add', // Menu slug
-        'bms_resident_add_edit_page_handler' // Function
-    );
-
-    // We will also need an edit page, but it can share the same handler as "add new"
-    // and won't have its own menu item. The link to edit will pass resident_id.
-}
-add_action( 'admin_menu', 'bms_resident_admin_menu' );
-
-/**
  * Handler for displaying the Residents List page.
  */
 function bms_residents_list_page_handler() {
@@ -167,8 +127,8 @@ function bms_resident_add_edit_page_handler() {
                 $result = $new_resident_id !== false;
                 $message = $result ? __( 'Resident added successfully.', 'barangay-management-system' ) : __( 'Failed to add resident.', 'barangay-management-system' );
                 if ($result) {
-                    // Redirect to edit page of the new resident or list page
-                    wp_redirect( admin_url('admin.php?page=bms-residents&resident_added=true&id=' . $new_resident_id) );
+                    // Redirect to edit page of the new resident
+                    wp_redirect( admin_url('admin.php?page=bms-resident-add&resident_id=' . $new_resident_id . '&resident_added=true') );
                     exit;
                 }
             }
