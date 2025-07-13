@@ -131,7 +131,7 @@ function bms_doc_template_add_edit_page_handler() {
 
         $data = array(
             'template_name'        => sanitize_text_field( $_POST['template_name'] ),
-            'template_content'     => wp_kses_post( $_POST['template_content'] ), // Using wp_kses_post for HTML content
+            'template_content'     => wp_kses_post( $_POST['template_content'] ),
             'defined_placeholders' => sanitize_textarea_field( $_POST['defined_placeholders'] ), // Expecting comma-separated or JSON
         );
 
