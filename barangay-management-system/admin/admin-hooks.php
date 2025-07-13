@@ -44,16 +44,6 @@ function bms_register_admin_menus() {
         'bms_resident_add_edit_page_handler'
     );
 
-
-    add_submenu_page(
-        null,
-        __( 'Issue Document', 'barangay-management-system' ),
-        __( 'Issue Document', 'barangay-management-system' ),
-        BMS_ISSUE_DOCUMENTS_CAP,
-        'bms-issue-document',
-        'bms_issue_document_page_handler'
-    );
-
     add_submenu_page(
         null,
         __( 'View Issued Document', 'barangay-management-system' ),

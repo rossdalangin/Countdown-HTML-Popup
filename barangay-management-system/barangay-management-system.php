@@ -343,11 +343,13 @@ function bms_enqueue_scripts() {
 }
 // add_action( 'wp_enqueue_scripts', 'bms_enqueue_scripts' ); // For front-end
 
-function bms_admin_enqueue_scripts() {
-    // Example: wp_enqueue_style( 'bms-admin-style', BMS_PLUGIN_URL . 'css/bms-admin.css', array(), '1.0.0', 'all' );
-    // Example: wp_enqueue_script( 'bms-admin-script', BMS_PLUGIN_URL . 'js/bms-admin.js', array( 'jquery' ), '1.0.0', false );
+function bms_admin_enqueue_scripts( $hook ) {
+    if ( 'edit.php' !== $hook || 'bms_doc_template' !== get_post_type() ) {
+        return;
+    }
+    wp_enqueue_script( 'bms-admin-script', BMS_PLUGIN_URL . 'admin/js/admin.js', array( 'jquery' ), '1.0.0', true );
 }
-// add_action( 'admin_enqueue_scripts', 'bms_admin_enqueue_scripts' ); // For admin area
+add_action( 'admin_enqueue_scripts', 'bms_admin_enqueue_scripts' ); // For admin area
 
 // We will create these directories and files in later steps
 // includes/
