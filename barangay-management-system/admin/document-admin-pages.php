@@ -11,6 +11,53 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 /**
+ * Register Document Template Admin Menu.
+ */
+function bms_document_template_admin_menu() {
+    // Submenu under "Barangay MS"
+    add_submenu_page(
+        'barangay-ms',    // Parent slug
+        __( 'Document Templates', 'barangay-management-system' ), // Page title
+        __( 'Document Templates', 'barangay-management-system' ), // Menu title
+        BMS_VIEW_DOCUMENT_TEMPLATES_CAP, // Capability to view templates
+        'bms-doc-templates',  // Menu slug
+        'bms_doc_templates_list_page_handler' // Function to display page content
+    );
+
+    add_submenu_page(
+        'bms-doc-templates',  // Parent slug (under Document Templates for better grouping)
+        __( 'Add New Template', 'barangay-management-system' ),
+        __( 'Add New Template', 'barangay-management-system' ),
+        BMS_MANAGE_DOCUMENT_TEMPLATES_CAP, // Capability to manage templates
+        'bms-doc-template-add', // Menu slug
+        'bms_doc_template_add_edit_page_handler' // Function
+    );
+
+    // Hidden submenu for issuing a document from a template (will be linked from templates list or resident profile)
+    add_submenu_page(
+        null, // No parent menu item, effectively hidden
+        __( 'Issue Document', 'barangay-management-system' ),
+        __( 'Issue Document', 'barangay-management-system' ),
+        BMS_ISSUE_DOCUMENTS_CAP,
+        'bms-issue-document',
+        'bms_issue_document_page_handler'
+    );
+
+    // Hidden submenu for viewing an issued document
+     add_submenu_page(
+        null, // No parent menu item, effectively hidden
+        __( 'View Issued Document', 'barangay-management-system' ),
+        __( 'View Issued Document', 'barangay-management-system' ),
+        BMS_VIEW_ISSUED_DOCUMENTS_CAP, // Capability to view issued documents
+        'bms-view-issued-document',
+        'bms_view_issued_document_page_handler'
+    );
+
+    // We might add a page for "All Issued Documents" later
+}
+add_action( 'admin_menu', 'bms_document_template_admin_menu' );
+
+/**
  * Handler for displaying the Document Templates List page.
  */
 function bms_doc_templates_list_page_handler() {
@@ -32,9 +79,13 @@ function bms_doc_templates_list_page_handler() {
         }
         $template_id = absint( $_GET['template_id'] );
         if ( bms_delete_document_template( $template_id ) ) {
-            bms_add_admin_notice( __( 'Template deleted successfully.', 'barangay-management-system' ) );
+            add_action( 'admin_notices', function() {
+                echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Template deleted successfully.', 'barangay-management-system' ) . '</p></div>';
+            });
         } else {
-            bms_add_admin_notice( __( 'Failed to delete template.', 'barangay-management-system' ), 'error' );
+             add_action( 'admin_notices', function() {
+                echo '<div class="notice notice-error is-dismissible"><p>' . esc_html__( 'Failed to delete template.', 'barangay-management-system' ) . '</p></div>';
+            });
         }
     }
 
@@ -52,7 +103,6 @@ function bms_doc_templates_list_page_handler() {
  * Handler for displaying the Add/Edit Document Template page.
  */
 function bms_doc_template_add_edit_page_handler() {
-    ob_start();
     if ( ! current_user_can( BMS_MANAGE_DOCUMENT_TEMPLATES_CAP ) ) {
         wp_die( esc_html__( 'You do not have sufficient permissions to manage document templates.', 'barangay-management-system' ) );
     }
@@ -89,28 +139,23 @@ function bms_doc_template_add_edit_page_handler() {
         if ( $is_editing && $template_id > 0 ) {
             $result = bms_update_document_template( $template_id, $data );
             $message = $result ? __( 'Template updated successfully.', 'barangay-management-system' ) : __( 'Failed to update template.', 'barangay-management-system' );
-            bms_add_admin_notice( $message, $result ? 'success' : 'error' );
         } else {
             $data['created_by'] = get_current_user_id();
             $new_template_id = bms_create_document_template( $data );
             $result = $new_template_id !== false;
+            $message = $result ? __( 'Template added successfully.', 'barangay-management-system' ) : __( 'Failed to add template.', 'barangay-management-system' );
             if ($result) {
-                bms_add_admin_notice( __( 'Template added successfully.', 'barangay-management-system' ) );
-                wp_redirect( admin_url('admin.php?page=bms-doc-template-add&template_id=' . $new_template_id . '&template_added=true') );
+                wp_redirect( admin_url('admin.php?page=bms-doc-templates&template_added=true&id=' . $new_template_id) );
                 exit;
-            } else {
-                bms_add_admin_notice( __( 'Failed to add template.', 'barangay-management-system' ), 'error' );
             }
         }
+        add_action( 'admin_notices', function() use ( $message, $result ) {
+            $notice_type = $result ? 'success' : 'error';
+            echo '<div class="notice notice-' . $notice_type . ' is-dismissible"><p>' . esc_html( $message ) . '</p></div>';
+        });
         if ($result && $is_editing) {
             $template = bms_get_document_template( $template_id ); // Reload data
         }
-    }
-
-    if ( ! $is_editing ) {
-        ob_start();
-        include BMS_PLUGIN_DIR . 'admin/views/document-template/professional-certificate.php';
-        $template_content = ob_get_clean();
     }
 
     if ( file_exists( BMS_PLUGIN_DIR . 'admin/views/document-template/add-edit-document-template.php' ) ) {
@@ -119,7 +164,6 @@ function bms_doc_template_add_edit_page_handler() {
         $page_title = $is_editing ? __( 'Edit Document Template', 'barangay-management-system' ) : __( 'Add New Document Template', 'barangay-management-system' );
         echo '<div class="wrap"><h1>' . esc_html( $page_title ) . '</h1><p>' . esc_html__( 'Error: Form view file not found.', 'barangay-management-system' ) . '</p></div>';
     }
-    ob_end_flush();
 }
 
 /**
@@ -170,14 +214,12 @@ function bms_issue_document_page_handler() {
         $issued_doc_id = bms_issue_document( $issue_data );
 
         if ( $issued_doc_id ) {
-            $issued_document = bms_get_issued_document( $issued_doc_id );
-            $pdf_content = bms_generate_pdf( $issued_document->generated_content );
-            header( 'Content-Type: application/pdf' );
-            header( 'Content-Disposition: attachment; filename="certificate.pdf"' );
-            echo $pdf_content;
+            wp_redirect( admin_url( 'admin.php?page=bms-view-issued-document&issued_doc_id=' . $issued_doc_id . '&issued=true' ) );
             exit;
         } else {
-            bms_add_admin_notice( __( 'Failed to issue document.', 'barangay-management-system' ), 'error' );
+            add_action( 'admin_notices', function() {
+                echo '<div class="notice notice-error is-dismissible"><p>' . esc_html__( 'Failed to issue document.', 'barangay-management-system' ) . '</p></div>';
+            });
         }
     }
 
@@ -213,7 +255,9 @@ function bms_view_issued_document_page_handler() {
     }
 
     if (isset($_GET['issued']) && $_GET['issued'] == 'true') {
-        bms_add_admin_notice( __( 'Document issued successfully.', 'barangay-management-system' ) );
+         add_action( 'admin_notices', function() {
+            echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Document issued successfully.', 'barangay-management-system' ) . '</p></div>';
+        });
     }
 
     if ( file_exists( BMS_PLUGIN_DIR . 'admin/views/issued-document/view-issued-document.php' ) ) {
