@@ -158,6 +158,10 @@ function bms_doc_template_add_edit_page_handler() {
         }
     }
 
+    if ( ! $is_editing ) {
+        $template_content = 'This is a test template.';
+    }
+
     if ( file_exists( BMS_PLUGIN_DIR . 'admin/views/document-template/add-edit-document-template.php' ) ) {
         include BMS_PLUGIN_DIR . 'admin/views/document-template/add-edit-document-template.php';
     } else {
