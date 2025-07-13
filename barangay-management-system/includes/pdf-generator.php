@@ -44,7 +44,9 @@ use Dompdf\Dompdf;
  */
 function bms_generate_pdf( $html ) {
     $dompdf = new Dompdf();
-    $dompdf->loadHtml( '<h1>Hello World</h1>' );
+    $css = file_get_contents( BMS_PLUGIN_DIR . 'public/css/certificate.css' );
+    $full_html = '<!DOCTYPE html><html><head><meta charset="utf-8"><style>' . $css . '</style></head><body>' . $html . '</body></html>';
+    $dompdf->loadHtml( $full_html );
     $dompdf->setPaper( 'A4', 'portrait' );
     $dompdf->render();
     return $dompdf->output();
