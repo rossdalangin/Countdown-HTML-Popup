@@ -10,7 +10,7 @@ if ( ! defined( 'WPINC' ) ) {
     die;
 }
 
-require_once '/tmp/dompdf/dompdf/autoload.inc.php';
+require_once BMS_PLUGIN_DIR . 'includes/lib/dompdf/autoload.inc.php';
 
 use Dompdf\Dompdf;
 
