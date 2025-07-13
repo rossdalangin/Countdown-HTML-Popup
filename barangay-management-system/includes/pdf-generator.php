@@ -10,6 +10,28 @@ if ( ! defined( 'WPINC' ) ) {
     die;
 }
 
+/**
+ * Download and extract the dompdf library.
+ */
+function bms_download_dompdf() {
+    $zip_file = BMS_PLUGIN_DIR . 'includes/lib/dompdf.zip';
+    $unzip_dir = BMS_PLUGIN_DIR . 'includes/lib/';
+
+    if ( ! file_exists( $unzip_dir . 'dompdf' ) ) {
+        $response = wp_remote_get( 'https://github.com/dompdf/dompdf/releases/download/v2.0.3/dompdf_2-0-3.zip' );
+        if ( is_wp_error( $response ) ) {
+            return;
+        }
+
+        file_put_contents( $zip_file, wp_remote_retrieve_body( $response ) );
+
+        WP_Filesystem();
+        unzip_file( $zip_file, $unzip_dir );
+        unlink( $zip_file );
+    }
+}
+add_action( 'init', 'bms_download_dompdf' );
+
 require_once wp_normalize_path( BMS_PLUGIN_DIR . 'includes/lib/dompdf/autoload.inc.php' );
 
 use Dompdf\Dompdf;
