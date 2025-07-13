@@ -131,7 +131,7 @@ function bms_doc_template_add_edit_page_handler() {
 
         $data = array(
             'template_name'        => sanitize_text_field( $_POST['template_name'] ),
-            'template_content'     => wp_kses_post( $_POST['template_content'] ),
+            'template_content'     => wp_kses_post( $_POST['template_content'] ), // Using wp_kses_post for HTML content
             'defined_placeholders' => sanitize_textarea_field( $_POST['defined_placeholders'] ), // Expecting comma-separated or JSON
         );
 
@@ -156,10 +156,6 @@ function bms_doc_template_add_edit_page_handler() {
         if ($result && $is_editing) {
             $template = bms_get_document_template( $template_id ); // Reload data
         }
-    }
-
-    if ( ! $is_editing ) {
-        $template_content = 'This is a test template.';
     }
 
     if ( file_exists( BMS_PLUGIN_DIR . 'admin/views/document-template/add-edit-document-template.php' ) ) {
